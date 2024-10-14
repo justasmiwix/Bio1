@@ -3,6 +3,7 @@ from math import sqrt
 from Bio.Seq import Seq
 from numpy import var
 
+
 def read_data(file_name):
     virus = open(file_name).read()
     name_end = virus.find("\n")
@@ -136,6 +137,7 @@ def build_distance_matrix(frequencies, alphabet):
 
     return distance_matrix
 
+
 def print_distance_matrix(matrix):
     print(len(matrix))
 
@@ -146,6 +148,22 @@ def print_distance_matrix(matrix):
             print(distance, end='')
             print(" ", end='')
         print()
+
+
+def find_variances(frequencies, alphabet):
+    codon_variations = []
+    for acid in alphabet:
+        codon_frequencies_acid = []
+        for codon_frequency in frequencies:
+            frequency = codon_frequency.get(acid)
+            if frequency is not None:
+                codon_frequencies_acid.append(frequency)
+            else:
+                codon_frequencies_acid.append(0)
+
+        codon_variations.append([acid, var(codon_frequencies_acid)])
+
+    return sorted(codon_variations, key=lambda x: x[1], reverse=True)
 
 
 bac1 = "viruses/data/bacterial1.fasta"
@@ -194,25 +212,5 @@ print()
 print_distance_matrix(dicodon_distance_matrix)
 print()
 
-def find_most_variant(frequencies, alphabet):
-    codon_variations = []
-    for acid in alphabet:
-        codon_frequencies_acid = []
-        for codon_frequency in frequencies:
-            frequency = codon_frequency.get(acid)
-            if frequency is not None:
-                codon_frequencies_acid.append(frequency)
-            else:
-                codon_frequencies_acid.append(0)
-
-        codon_variations.append([acid, var(codon_frequencies_acid)])
-
-    return sorted(codon_variations, key=lambda x: x[1], reverse=True)
-
-
-
-print(find_most_variant(codon_frequencies, codon_acids))
-print(find_most_variant(dicodon_frequencies, dicodon_acids))
-
-
-
+print(find_variances(codon_frequencies, codon_acids))
+print(find_variances(dicodon_frequencies, dicodon_acids))
